@@ -245,54 +245,558 @@ spring.jpa.show-sql=true
 
 server.port=9000
 ```
--  Open the SpringBoot main class **HelloworldserviceApplication.java** . We can always identify the main class in a Spring Boot project by looking for the annotation **@SpringBootApplication**
+-  Open the SpringBoot main classes of **accounts, loans and cards** microservices. We can always identify the main class in a Spring Boot project by looking for the annotation **@SpringBootApplication**. Below are the sample code present inside these SpringBoot main classes.
 
-### \src\main\java\com\eazybytes\helloworldservice\HelloworldserviceApplication.java
+### \accounts\src\main\java\com\eazybytes\accounts\AccountsApplication.java
 
 ```java
-package com.eazybytes.helloworldservice;
+package com.eazybytes.accounts;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-public class HelloworldserviceApplication {
+@ComponentScans({ @ComponentScan("com.eazybytes.accounts.controller") })
+@EnableJpaRepositories("com.eazybytes.accounts.repository")
+@EntityScan("com.eazybytes.accounts.model")
+public class AccountsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HelloworldserviceApplication.class, args);
+		SpringApplication.run(AccountsApplication.class, args);
 	}
-
 }
 
 ```
--  Please create a new Rest Controller class **HelloWorldRestController.java** in the same package of **HelloworldserviceApplication.java** and write a new method **sayHello()** with **@GetMapping(value = "/hello")** configurations on top of it. Your **HelloWorldRestController.java** class should look like shown below,
-
-### \src\main\java\com\eazybytes\helloworldservice\HelloWorldRestController.java
+### \loans\src\main\java\com\eazybytes\loans\LoansApplication.java
 
 ```java
-package com.eazybytes.helloworldservice;
+package com.eazybytes.loans;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication
+@ComponentScans({ @ComponentScan("com.eazybytes.loans.controller") })
+@EnableJpaRepositories("com.eazybytes.loans.repository")
+@EntityScan("com.eazybytes.loans.model")
+public class LoansApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(LoansApplication.class, args);
+	}
+
+}
+
+```
+### \cards\src\main\java\com\eazybytes\cards\CardsApplication.java
+
+```java
+package com.eazybytes.cards;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+@SpringBootApplication
+@ComponentScans({ @ComponentScan("com.eazybytes.cards.controller") })
+@EnableJpaRepositories("com.eazybytes.cards.repository")
+@EntityScan("com.eazybytes.cards.model")
+public class CardsApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CardsApplication.class, args);
+	}
+
+}
+
+```
+-  Create a new Rest Controller classes like mentioned below for all the three microservices. We can use **@GetMapping** as well instead of **@PostMapping**. But I used **@PostMapping** to make sure any senstive information of Bank customer should not get exposed in the browser URL.
+
+### accounts\src\main\java\com\eazybytes\accounts\controller\AccountsController.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.accounts.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class HelloWorldRestController {
+import com.eazybytes.accounts.model.Accounts;
+import com.eazybytes.accounts.model.Customer;
+import com.eazybytes.accounts.repository.AccountsRepository;
 
-	@GetMapping(value = "/hello")
-	public String sayHello() {
-		return "Hello, Welcome to course on Microservices";
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class AccountsController {
+	
+	@Autowired
+	private AccountsRepository accountsRepository;
+
+	@PostMapping("/myAccount")
+	public Accounts getAccountDetails(@RequestBody Customer customer) {
+
+		Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
+		if (accounts != null) {
+			return accounts;
+		} else {
+			return null;
+		}
+
 	}
+
 }
 ```
--  Open the **application.properties** and make the following entry inside it which will expose the supported APIs by Actuator
-### \src\main\resources\application.properties
-```
-management.endpoints.web.exposure.include=*
-```
--  Go to your Spring Boot main class **HelloworldserviceApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application successfully at port 8080 which is a default port. Your can confirm the same by looking at the console logs.
--  Access the URL http://localhost:8080/hello inside your browser and you should be able to see the response from your REST service
--  Access the URL http://localhost:8080/actuator inside your browser and you should be able to see various paths related to health, metrics etc. which are exposed by Actuator
+### \loans\src\main\java\com\eazybytes\loans\controller\LoansController.java
 
+```java
+/**
+ * 
+ */
+package com.eazybytes.loans.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eazybytes.loans.model.Customer;
+import com.eazybytes.loans.model.Loans;
+import com.eazybytes.loans.repository.LoansRepository;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class LoansController {
+
+	@Autowired
+	private LoansRepository loansRepository;
+
+	@PostMapping("/myLoans")
+	public List<Loans> getLoansDetails(@RequestBody Customer customer) {
+		List<Loans> loans = loansRepository.findByCustomerIdOrderByStartDtDesc(customer.getCustomerId());
+		if (loans != null) {
+			return loans;
+		} else {
+			return null;
+		}
+
+	}
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\controller\CardsController.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.cards.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eazybytes.cards.model.Cards;
+import com.eazybytes.cards.model.Customer;
+import com.eazybytes.cards.repository.CardsRepository;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class CardsController {
+
+	@Autowired
+	private CardsRepository cardsRepository;
+
+	@PostMapping("/myCards")
+	public List<Cards> getCardDetails(@RequestBody Customer customer) {
+		List<Cards> cards = cardsRepository.findByCustomerId(customer.getCustomerId());
+		if (cards != null) {
+			return cards;
+		} else {
+			return null;
+		}
+
+	}
+
+}
+```
+
+-  Make sure that all the dependent Entity Java files & JPA Repository files are present inside the projects
+
+### accounts\src\main\java\com\eazybytes\accounts\model\Accounts.java
+
+```java
+package com.eazybytes.accounts.model;
+
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter @Setter @ToString
+public class Accounts {
+
+	@Column(name = "customer_id")
+	private int customerId;
+	@Column(name="account_number")
+	@Id
+	private long accountNumber;
+	@Column(name="account_type")
+	private String accountType;
+	@Column(name = "branch_address")
+	private String branchAddress;
+	@Column(name = "create_dt")
+	private LocalDate createDt;
+	
+}
+```
+### \accounts\src\main\java\com\eazybytes\accounts\model\Customer.java
+
+```java
+package com.eazybytes.accounts.model;
+
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter @Setter @ToString
+public class Customer {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "customer_id")
+	private int customerId;
+	private String name;
+	private String email;
+	@Column(name = "mobile_number")
+	private String mobileNumber;
+	@Column(name = "create_dt")
+	private LocalDate createDt;
+
+}
+```
+### \accounts\src\main\java\com\eazybytes\accounts\repository\AccountsRepository.java
+```java
+package com.eazybytes.accounts.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.eazybytes.accounts.model.Accounts;
+
+@Repository
+public interface AccountsRepository extends CrudRepository<Accounts, Long> {
+
+	Accounts findByCustomerId(int customerId);
+
+}
+```
+### \loans\src\main\java\com\eazybytes\loans\model\Loans.java
+```java
+package com.eazybytes.loans.model;
+
+import java.sql.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter @Setter @ToString
+public class Loans {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "loan_number")
+	private int loanNumber;
+	
+	@Column(name = "customer_id")
+	private int customerId;
+	
+	@Column(name="start_dt")
+	private Date startDt;
+	
+	@Column(name = "loan_type")
+	private String loanType;
+	
+	@Column(name = "total_loan")
+	private int totalLoan;
+	
+	@Column(name = "amount_paid")
+	private int amountPaid;
+	
+	@Column(name = "outstanding_amount")
+	private int outstandingAmount;
+	
+	@Column(name = "create_dt")
+	private String createDt;
+	
+}
+```
+### \loans\src\main\java\com\eazybytes\loans\model\Customer.java
+```java
+package com.eazybytes.loans.model;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@Getter @Setter @ToString
+public class Customer {
+
+	private int customerId;
+
+}
+```
+### \loans\src\main\java\com\eazybytes\loans\repository\LoansRepository.java
+```java
+package com.eazybytes.loans.repository;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.eazybytes.loans.model.Loans;
+
+@Repository
+public interface LoansRepository extends CrudRepository<Loans, Long> {
+
+	
+	List<Loans> findByCustomerIdOrderByStartDtDesc(int customerId);
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\model\Cards.java
+```java
+package com.eazybytes.cards.model;
+
+import java.sql.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Getter
+@Setter
+@ToString
+public class Cards {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "card_id")
+	private int cardId;
+
+	@Column(name = "customer_id")
+	private int customerId;
+
+	@Column(name = "card_number")
+	private String cardNumber;
+
+	@Column(name = "card_type")
+	private String cardType;
+
+	@Column(name = "total_limit")
+	private int totalLimit;
+
+	@Column(name = "amount_used")
+	private int amountUsed;
+
+	@Column(name = "available_amount")
+	private int availableAmount;
+
+	@Column(name = "create_dt")
+	private Date createDt;
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\model\Customer.java
+```java
+package com.eazybytes.cards.model;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@Getter @Setter @ToString
+public class Customer {
+
+	private int customerId;
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\repository\CardsRepository.java
+```java
+package com.eazybytes.cards.repository;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.eazybytes.cards.model.Cards;
+
+@Repository
+public interface CardsRepository extends CrudRepository<Cards, Long> {
+
+	
+	List<Cards> findByCustomerId(int customerId);
+
+}
+```
+-  To set up tables, columns, data needed inside the H2 database, create a **data.sql** in all the microservices under **src\main\resources\\** folder. Below is the sample SQL scripts for each microservice. Please note that these scripts will be executed everytime you start the microservice and the moment you stop/restart your service all your data present inside your H2 database will be lost. So please make sure not to use this inside production applications.
+
+### \accounts\src\main\resources\data.sql
+```sql
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS accounts;
+
+CREATE TABLE `customer` (
+  `customer_id` int AUTO_INCREMENT  PRIMARY KEY,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mobile_number` varchar(20) NOT NULL,
+  `create_dt` date DEFAULT NULL
+);
+
+CREATE TABLE `accounts` (
+  `customer_id` int NOT NULL,
+   `account_number` int AUTO_INCREMENT  PRIMARY KEY,
+  `account_type` varchar(100) NOT NULL,
+  `branch_address` varchar(200) NOT NULL,
+  `create_dt` date DEFAULT NULL
+);
+
+INSERT INTO `customer` (`name`,`email`,`mobile_number`,`create_dt`)
+ VALUES ('Eazy Bytes','tutor@eazybytes.com','9876548337',CURDATE());
+ 
+INSERT INTO `accounts` (`customer_id`, `account_number`, `account_type`, `branch_address`, `create_dt`)
+ VALUES (1, 186576453, 'Savings', '123 Main Street, New York', CURDATE());
+ 
+```
+### \loans\src\main\resources\data.sql
+```sql
+DROP TABLE IF EXISTS loans;
+
+CREATE TABLE `loans` (
+  `loan_number` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int NOT NULL,
+  `start_dt` date NOT NULL,
+  `loan_type` varchar(100) NOT NULL,
+  `total_loan` int NOT NULL,
+  `amount_paid` int NOT NULL,
+  `outstanding_amount` int NOT NULL,
+  `create_dt` date DEFAULT NULL,
+  PRIMARY KEY (`loan_number`)
+);
+
+INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
+ VALUES ( 1, '2020-10-13', 'Home', 200000, 50000, 150000, '2020-10-13');
+ 
+INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
+ VALUES ( 1, '2020-06-06', 'Vehicle', 40000, 10000, 30000, '2020-06-06');
+ 
+INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
+ VALUES ( 1, '2021-02-14', 'Home', 50000, 10000, 40000, '2018-02-14');
+
+INSERT INTO `loans` ( `customer_id`, `start_dt`, `loan_type`, `total_loan`, `amount_paid`, `outstanding_amount`, `create_dt`)
+ VALUES ( 1, '2018-02-14', 'Personal', 10000, 3500, 6500, '2018-02-14');
+```
+### \cards\src\main\resources\data.sql
+```sql
+DROP TABLE IF EXISTS cards;
+
+CREATE TABLE `cards` (
+  `card_id` int NOT NULL AUTO_INCREMENT,
+  `card_number` varchar(100) NOT NULL,
+  `customer_id` int NOT NULL,
+  `card_type` varchar(100) NOT NULL,
+  `total_limit` int NOT NULL,
+  `amount_used` int NOT NULL,
+  `available_amount` int NOT NULL,
+  `create_dt` date DEFAULT NULL,
+  PRIMARY KEY (`card_id`)
+);
+
+
+INSERT INTO `cards` (`card_number`, `customer_id`, `card_type`, `total_limit`, `amount_used`, `available_amount`, `create_dt`)
+ VALUES ('4565XXXX4656', 1, 'Credit', 10000, 500, 9500, CURDATE());
+
+INSERT INTO `cards` (`card_number`, `customer_id`, `card_type`, `total_limit`, `amount_used`, `available_amount`, `create_dt`)
+ VALUES ('3455XXXX8673', 1, 'Credit', 7500, 600, 6900, CURDATE());
+ 
+INSERT INTO `cards` (`card_number`, `customer_id`, `card_type`, `total_limit`, `amount_used`, `available_amount`, `create_dt`)
+ VALUES ('2359XXXX9346', 1, 'Credit', 20000, 4000, 16000, CURDATE());
+```
+-  Go to your Spring Boot main classes and start all the three microservices by right click-> Run As -> Java Application. This will start your microservices successfully at port **8080,8090,9000** based on the ports configured inside **application.properties**. Your can confirm the same by looking at the console logs.
+-  Access the URLs of H2 databases of all the three microservices to make sure tables, columns, data is created inside them successfully. The URLs are http://localhost:8080/h2-console/, http://localhost:8090/h2-console/, http://localhost:9000/h2-console/ respectively.
+-  Invoke the REST APIs http://localhost:8080/myAccount, http://localhost:8090/myLoans, http://localhost:9000/myCards through Postman by passing the below request in JSON format. You should get the response from the corresponding microservices.
+```json
+{
+    "customerId": 1
+}
+```
 ---
-### HURRAY !!! Congratulations you successfully setup Helloworld service using Spring Boot
+### HURRAY !!! Congratulations you successfully setup three microservices related to Accounts, Loans and Cards of EazyBank Application
 ---
