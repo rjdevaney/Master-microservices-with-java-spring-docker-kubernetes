@@ -2,7 +2,7 @@
 ---
 
 **Description:** This repository has three maven projects with the names **accounts, loans, cards** which are continuation from the **section4** repository. 
-These three projects will updated, so that Docker images can be generated for the three microservices. Below are the key steps that are followed while creating these projects.
+These three projects are updated, so that Docker images can be generated for the three microservices. Below are the key steps that are followed inside this section where we focused on docker images generation and setup of docker-compose file for all the three microservices.
 
 **Key steps:**
 - Go to https://www.docker.com/ and create an account in it. Make sure to install docker desktop based on the OS that you are working like we discussed in the course.
@@ -17,7 +17,7 @@ These three projects will updated, so that Docker images can be generated for th
 }
 ```
 - We can start and verify accounts microservice response by running another command **"java -jar target/accounts-0.0.1-SNAPSHOT.jar"** from the command line tool. Post validating the response stop the accounts microservice.
-- Now lets create the **Dockerfile** inside **accounts** microservice root folder with the following content. This **Dockerfile** will be used to generate a docker image by using the basic and approach that we discussed in the course.
+- Now lets create the **Dockerfile** inside **accounts** microservice root folder with the following content. This **Dockerfile** will be used to generate a docker image by using the basic and lengthy approach that we discussed in the course.
 ```yaml
 #Start with a base image containing Java runtime
 FROM openjdk:11-slim as build
@@ -85,7 +85,7 @@ ENTRYPOINT ["java","-jar","/accounts-0.0.1-SNAPSHOT.jar"]
 - Run the docker command **"docker stop [container-id]"** for both the 2 running containers of **loans & cards** microservice to stop them.
 - Push all your docker images of **accounts, loans, cards** into docker hub by running the command **"docker push docker.io/[image-name]"**. Please make sure you logged into 
   your docker account inside your docker desktop server, otherwise you will get authentication related issues while trying to push the docker images into docker hub. Validate
-  if the docker images successfully pushed or not by loging into **hub.docker.com** website.
+  if the docker images successfully pushed or not by loging into https://hub.docker.com/ website.
 - In order to start all our docker images using a single docker compose command, install Docker compose by following the instruction mentioned in the https://docs.docker.com/compose/install/ website. More details can be found in the course.
 - Post installation of docker compose, validate the same by running the docker compose command **"docker-compose --version"**
 - Now write a **docker-compose.yml** file inside accounts project with the following content,
