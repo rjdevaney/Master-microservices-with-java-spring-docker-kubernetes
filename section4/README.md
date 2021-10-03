@@ -452,7 +452,7 @@ public class CardsController {
 }
 ```
 
--  Make sure that all the dependent Entity Java files & JPA Repository files are present inside the projects
+-  Make sure that all the dependent Entity Java files & JPA Repository files are present inside the three projects like shown below,
 
 ### accounts\src\main\java\com\eazybytes\accounts\model\Accounts.java
 
@@ -705,7 +705,7 @@ public interface CardsRepository extends CrudRepository<Cards, Long> {
 
 }
 ```
--  To set up tables, columns, data needed inside the H2 database, create a **data.sql** in all the microservices under **src\main\resources\\** folder. Below is the sample SQL scripts for each microservice. Please note that these scripts will be executed everytime you start the microservice and the moment you stop/restart your service all your data present inside your H2 database will be lost. So please make sure not to use this inside production applications.
+-  To set up tables, columns, data needed inside the H2 database, create a **data.sql** file in all the microservices under **src\main\resources\\** folder. Below are the sample SQL scripts for each microservice. Please note that these scripts will be executed everytime you start the microservice and the moment you stop/restart your service all your data present inside your H2 database will be lost. So please make sure not to use internal memory H2 database inside production applications.
 
 ### \accounts\src\main\resources\data.sql
 ```sql
