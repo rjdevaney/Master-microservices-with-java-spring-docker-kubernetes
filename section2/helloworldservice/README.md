@@ -100,6 +100,8 @@ public class HelloWorldRestController {
 ```
 -  Go to your Spring Boot main class **HelloworldserviceApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application successfully at port 8080 which is a default port. Your can confirm the same by looking at the console logs.
 -  Access the URL http://localhost:8080/hello inside your browser and you should be able to see the response from your REST service
+-  Access the URL http://localhost:8080/actuator inside your browser and you should be able to see various paths related to health, metrics etc. which are exposed by Actuator
 
+---
 ### HURRAY !!! Congratulations you successfully setup Helloworld service using Spring Boot
 ---
