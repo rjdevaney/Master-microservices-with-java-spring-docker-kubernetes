@@ -122,7 +122,7 @@ networks:
   eazybank-network:
 ```
 -  Open the command line tool where the **docker-compose.yml** is present and run the docker compose command **"docker-compose up"** to start all the microservices containers with a single command. All the running containers can be validated by running a docker command **"docker ps"**.
--  Invoke the REST APIs http://localhost:8080/myAccount, http://localhost:8090/myLoans, http://localhost:9000/myCards through Postman by passing the below request in JSON format. You should get the response from the corresponding microservices.
+-  Invoke the REST APIs http://localhost:8080/myAccount, http://localhost:8090/myLoans, http://localhost:9000/myCards through Postman by passing the below request in JSON          format. You should get the response from the corresponding microservices.
 ```json
 {
     "customerId": 1
