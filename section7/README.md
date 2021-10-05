@@ -140,6 +140,693 @@ server.port=8071
 -  Go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application                successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 - Access the URLs like http://localhost:8071/accounts/default, http://localhost:8071/loans/dev, http://localhost:8071/cards/prod inside your browser to randomly validate that
   properties are being read from configured Github location by Config Server for all the three microservices **accounts, loans and cards**.
+- Now in order to integrate individual microservices **accounts, loans and cards** with **configserver**, please update the **pom.xml** files inside these microservices with
+  **<spring-cloud.version>** details, **spring-cloud-starter-config** dependency, **spring-cloud-dependencies** under <dependencyManagement>. After making the changes, your       pom.xml files should like below. For more details please check the course videos.
+	
+### accounts\pom.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.eaztbytes</groupId>
+	<artifactId>accounts</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>accounts</name>
+	<description>Microservice for Accounts</description>
+	<properties>
+		<java.version>11</java.version>
+		<spring-cloud.version>2020.0.2</spring-cloud.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+```
+### loans\pom.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.eaztbytes</groupId>
+	<artifactId>loans</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>loans</name>
+	<description>Microservice for Loans</description>
+	<properties>
+		<java.version>11</java.version>
+		<spring-cloud.version>2020.0.2</spring-cloud.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>eazybytes/${project.artifactId}</name>
+					</image>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+```
+### cards\pom.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.eaztbytes</groupId>
+	<artifactId>cards</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>cards</name>
+	<description>Microservice for Cards</description>
+	<properties>
+		<java.version>11</java.version>
+		<spring-cloud.version>2020.0.2</spring-cloud.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>eazybytes/${project.artifactId}</name>
+					</image>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+```
+-  Make sure all the required and associated libraries are downloaded under maven dependencies of **accounts**, **loans**, **cards** microservices.
+-  Open the **application.properties** present inside **accounts**, **loans**, **cards** microservices and make sure to update the properties related to Config server details 
+   inside them. After making the changes, your **application.properties** files should like below. For more details please check the course videos.
+### \accounts\src\main\resources\application.properties
+```
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+server.port=8080
+
+spring.application.name=accounts
+spring.profiles.active=prod
+spring.config.import=optional:configserver:http://localhost:8071
+```
+### \loans\src\main\resources\application.properties
+```
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+server.port=8090
+
+spring.application.name=loans
+spring.profiles.active=dev
+spring.config.import=optional:configserver:http://localhost:8071/
+```
+### \cards\src\main\resources\application.properties
+```
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+server.port=9000
+
+spring.application.name=cards
+spring.profiles.active=default
+spring.config.import=optional:configserver:http://localhost:8071
+```
+-  Like we discussed in the course, under Accounts microservice project, please create the classes **AccountsServiceConfig.java**, **Properties.java** and update **AccountsController.java** to add a new GET API with the name **/account/properties**. After making the changes, these classes should like below.
+```
+### accounts\src\main\java\com\eazybytes\accounts\config\AccountsServiceConfig.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.accounts.config;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+@Configuration
+@ConfigurationProperties(prefix = "accounts")
+@Getter @Setter @ToString
+public class AccountsServiceConfig {
+
+	 private String msg;
+	 private String buildVersion;
+	 private Map<String, String> mailDetails;
+	 private List<String> activeBranches;
+
+}
+
+```
+### \accounts\src\main\java\com\eazybytes\accounts\model\Properties.java
+
+```java
+package com.eazybytes.accounts.model;
+
+import java.util.List;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class Properties {
+
+	private String msg;
+	private String buildVersion;
+	private Map<String, String> mailDetails;
+	private List<String> activeBranches;
+
+	public Properties(String msg, String buildVersion, Map<String, String> mailDetails, List<String> activeBranches) {
+		this.msg = msg;
+		this.buildVersion = buildVersion;
+		this.mailDetails = mailDetails;
+		this.activeBranches = activeBranches;
+	}
+
+}
+```
+### \accounts\src\main\java\com\eazybytes\accounts\controller\AccountsController.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.accounts.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eazybytes.accounts.config.AccountsServiceConfig;
+import com.eazybytes.accounts.model.Accounts;
+import com.eazybytes.accounts.model.Customer;
+import com.eazybytes.accounts.model.Properties;
+import com.eazybytes.accounts.repository.AccountsRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class AccountsController {
+	
+	@Autowired
+	private AccountsRepository accountsRepository;
+
+	@Autowired
+	AccountsServiceConfig accountsConfig;
+	
+	@PostMapping("/myAccount")
+	public Accounts getAccountDetails(@RequestBody Customer customer) {
+
+		Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
+		if (accounts != null) {
+			return accounts;
+		} else {
+			return null;
+		}
+
+	}
+	
+	@GetMapping("/account/properties")
+	public String getPropertyDetails() throws JsonProcessingException {
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		Properties properties = new Properties(accountsConfig.getMsg(), accountsConfig.getBuildVersion(),
+				accountsConfig.getMailDetails(), accountsConfig.getActiveBranches());
+		String jsonStr = ow.writeValueAsString(properties);
+		return jsonStr;
+	}
+
+}
+```
+-  Like we discussed in the course, under Loans microservice project, please create the classes **LoansServiceConfig.java**, **Properties.java** and update **LoansController.java** to add a new GET API with the name **/loans/properties**. After making the changes, these classes should like below.
+```
+### \loans\src\main\java\com\eazybytes\loans\config\LoansServiceConfig.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.loans.config;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+@Configuration
+@ConfigurationProperties(prefix = "loans")
+@Getter @Setter @ToString
+public class LoansServiceConfig {
+
+	 private String msg;
+	 private String buildVersion;
+	 private Map<String, String> mailDetails;
+	 private List<String> activeBranches;
+
+}
+```
+### \loans\src\main\java\com\eazybytes\loans\model\Properties.java
+
+```java
+package com.eazybytes.loans.model;
+
+import java.util.List;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class Properties {
+
+	private String msg;
+	private String buildVersion;
+	private Map<String, String> mailDetails;
+	private List<String> activeBranches;
+
+	public Properties(String msg, String buildVersion, Map<String, String> mailDetails, List<String> activeBranches) {
+		this.msg = msg;
+		this.buildVersion = buildVersion;
+		this.mailDetails = mailDetails;
+		this.activeBranches = activeBranches;
+	}
+
+}
+```
+### \loans\src\main\java\com\eazybytes\loans\controller\LoansController.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.loans.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eazybytes.loans.config.LoansServiceConfig;
+import com.eazybytes.loans.model.Customer;
+import com.eazybytes.loans.model.Loans;
+import com.eazybytes.loans.model.Properties;
+import com.eazybytes.loans.repository.LoansRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class LoansController {
+
+	@Autowired
+	private LoansRepository loansRepository;
+	
+	@Autowired
+	LoansServiceConfig loansConfig;
+
+	@PostMapping("/myLoans")
+	public List<Loans> getLoansDetails(@RequestBody Customer customer) {
+		List<Loans> loans = loansRepository.findByCustomerIdOrderByStartDtDesc(customer.getCustomerId());
+		if (loans != null) {
+			return loans;
+		} else {
+			return null;
+		}
+
+	}
+	
+	@GetMapping("/loans/properties")
+	public String getPropertyDetails() throws JsonProcessingException {
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		Properties properties = new Properties(loansConfig.getMsg(), loansConfig.getBuildVersion(),
+				loansConfig.getMailDetails(), loansConfig.getActiveBranches());
+		String jsonStr = ow.writeValueAsString(properties);
+		return jsonStr;
+	}
+
+}
+```
+-  Like we discussed in the course, under Cards microservice project, please create the classes **CardsServiceConfig.java**, **Properties.java** and update **CardsController.java** to add a new GET API with the name **/cards/properties**. After making the changes, these classes should like below.
+```
+### \cards\src\main\java\com\eazybytes\cards\config\CardsServiceConfig.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.cards.config;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+@Configuration
+@ConfigurationProperties(prefix = "cards")
+@Getter @Setter @ToString
+public class CardsServiceConfig {
+
+	 private String msg;
+	 private String buildVersion;
+	 private Map<String, String> mailDetails;
+	 private List<String> activeBranches;
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\model\Properties.java
+
+```java
+package com.eazybytes.cards.model;
+
+import java.util.List;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class Properties {
+
+	private String msg;
+	private String buildVersion;
+	private Map<String, String> mailDetails;
+	private List<String> activeBranches;
+
+	public Properties(String msg, String buildVersion, Map<String, String> mailDetails, List<String> activeBranches) {
+		this.msg = msg;
+		this.buildVersion = buildVersion;
+		this.mailDetails = mailDetails;
+		this.activeBranches = activeBranches;
+	}
+
+}
+```
+### \cards\src\main\java\com\eazybytes\cards\controller\CardsController.java
+
+```java
+/**
+ * 
+ */
+package com.eazybytes.cards.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eazybytes.cards.config.CardsServiceConfig;
+import com.eazybytes.cards.model.Cards;
+import com.eazybytes.cards.model.Customer;
+import com.eazybytes.cards.model.Properties;
+import com.eazybytes.cards.repository.CardsRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+/**
+ * @author Eazy Bytes
+ *
+ */
+
+@RestController
+public class CardsController {
+
+	@Autowired
+	private CardsRepository cardsRepository;
+	
+	@Autowired
+	CardsServiceConfig cardsConfig;
+
+	@PostMapping("/myCards")
+	public List<Cards> getCardDetails(@RequestBody Customer customer) {
+		List<Cards> cards = cardsRepository.findByCustomerId(customer.getCustomerId());
+		if (cards != null) {
+			return cards;
+		} else {
+			return null;
+		}
+
+	}
+	
+	@GetMapping("/cards/properties")
+	public String getPropertyDetails() throws JsonProcessingException {
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		Properties properties = new Properties(cardsConfig.getMsg(), cardsConfig.getBuildVersion(),
+				cardsConfig.getMailDetails(), cardsConfig.getActiveBranches());
+		String jsonStr = ow.writeValueAsString(properties);
+		return jsonStr;
+	}
+
+}
+
+```
+-  Check if your Config Server is running at port 8071, if not go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
+-  Now go to the Spring Boot main classes and start all the three microservices by right click-> Run As -> Java Application. This will start your microservices successfully at port **8080,8090,9000** based on the ports configured inside **application.properties**. Your can confirm the same by looking at the console logs.
+-  To validate if individual microservices like **accounts, loans & cards** are able to fetch properties from **configserver** based on the cofigured **spring.profiles.active**
+   value, invoke the REST APIs http://localhost:8080/myAccount, http://localhost:8090/myLoans, http://localhost:9000/myCards through Postman by passing the below request in JSON format. You should get the response from the corresponding microservices.
 
 ---
 ### HURRAY !!! Congratulations, you successfully generated docker images for three microservices related to Accounts, Loans and Cards of EazyBank Application.
