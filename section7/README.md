@@ -144,7 +144,7 @@ encrypt.key=eazybytes
 - Access the URLs like http://localhost:8071/accounts/default, http://localhost:8071/loans/dev, http://localhost:8071/cards/prod inside your browser to randomly validate that
   properties are being read from configured Github location by Config Server for all the three microservices **accounts, loans and cards**.
 - Now in order to integrate individual microservices **accounts, loans and cards** with **configserver**, please update the **pom.xml** files inside these microservices with
-  **<spring-cloud.version>** details, **spring-cloud-starter-config** dependency, **spring-cloud-dependencies** under <dependencyManagement>. After making the changes, your       pom.xml files should like below. For more details please check the course videos.
+  **<spring-cloud.version>** details, **spring-cloud-starter-config** dependency, **spring-cloud-dependencies** under **dependencyManagement**. After making the changes, your       pom.xml files should like below. For more details please check the course videos.
 	
 ### accounts\pom.xml
 ```xml
@@ -454,7 +454,7 @@ spring.config.import=optional:configserver:http://localhost:8071
 management.endpoints.web.exposure.include=*
 ```
 -  Like we discussed in the course, under Accounts microservice project, please create the classes **AccountsServiceConfig.java**, **Properties.java** and update **AccountsController.java** to add a new GET API with the name **/account/properties**. After making the changes, these classes should like below.
-```
+
 ### accounts\src\main\java\com\eazybytes\accounts\config\AccountsServiceConfig.java
 
 ```java
@@ -580,7 +580,7 @@ public class AccountsController {
 }
 ```
 -  Like we discussed in the course, under Loans microservice project, please create the classes **LoansServiceConfig.java**, **Properties.java** and update **LoansController.java** to add a new GET API with the name **/loans/properties**. After making the changes, these classes should like below.
-```
+
 ### \loans\src\main\java\com\eazybytes\loans\config\LoansServiceConfig.java
 
 ```java
@@ -706,7 +706,7 @@ public class LoansController {
 }
 ```
 -  Like we discussed in the course, under Cards microservice project, please create the classes **CardsServiceConfig.java**, **Properties.java** and update **CardsController.java** to add a new GET API with the name **/cards/properties**. After making the changes, these classes should like below.
-```
+
 ### \cards\src\main\java\com\eazybytes\cards\config\CardsServiceConfig.java
 
 ```java
