@@ -101,13 +101,15 @@ public class ConfigserverApplication {
 
 ```
 - Create a **config** folder under the path **'configserver\src\main\resources\'** and copy all the 9 property files related to **accounts, loans and cards** microservices like mentioned in the course. The 9 property files can be found at https://github.com/eazybytes/microservices-with-spring-sectionwise-code/tree/master/section7/configserver/src/main/resources/config
-- Open the **application.properties** inside **configserver** microservices and make the following entries inside it which will help in reading the properties from a given classpath location.
+- Open the **application.properties** inside **configserver** microservices and make the following entries inside it which will help in reading the properties from a given classpath location. Please note that **encrypt.key** is optional and can be used only in the scenarios where you want **configserver** to handle the **encryption/decryption** of
+the properties like we discussed in the course.
 ### \src\main\resources\application.properties
 ```
 spring.application.name=configserver
 spring.profiles.active=native
 spring.cloud.config.server.native.search-locations=classpath:/config
 server.port=8071
+encrypt.key=eazybytes
 ```
 -  Go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application                successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 - Access the URLs like http://localhost:8071/accounts/default, http://localhost:8071/loans/dev, http://localhost:8071/cards/prod inside your browser to randomly validate the
@@ -120,13 +122,14 @@ spring.application.name=configserver
 spring.profiles.active=native
 spring.cloud.config.server.native.search-locations=file:///C://config
 server.port=8071
+encrypt.key=eazybytes
 ```
 -  Go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application                successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 - Access the URLs like http://localhost:8071/accounts/default, http://localhost:8071/loans/dev, http://localhost:8071/cards/prod inside your browser to randomly validate that
   properties are being read from configured file system by Config Server for all the three microservices **accounts, loans and cards**.
 - Stop the Config Server microservices which started at port 8071 earlier.  
 - Create Github repository and upload all the 9 property files related to **accounts, loans and cards** microservices in to it like mentioned in the course. You can refer to https://github.com/eazybytes/microservices-config as a sample reference.
-- - Open the **application.properties** inside **configserver** microservices and make the following entries inside it which will help in reading the properties from a given Github repository. 
+- Open the **application.properties** inside **configserver** microservices and make the following entries inside it which will help in reading the properties from a given Github repository. 
 ### \src\main\resources\application.properties
 ```
 spring.application.name=configserver
@@ -135,7 +138,7 @@ spring.cloud.config.server.git.uri=https://github.com/eazybytes/microservices-co
 spring.cloud.config.server.git.clone-on-start=true
 spring.cloud.config.server.git.default-label=main
 server.port=8071
-
+encrypt.key=eazybytes
 ```
 -  Go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application                successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 - Access the URLs like http://localhost:8071/accounts/default, http://localhost:8071/loans/dev, http://localhost:8071/cards/prod inside your browser to randomly validate that
@@ -394,6 +397,9 @@ server.port=8071
 </project>
 ```
 -  Make sure all the required and associated libraries are downloaded under maven dependencies of **accounts**, **loans**, **cards** microservices.
+-  Like we discussed in the course, add **@RefreshScope** annotation on top of **AccountsApplication.java, LoansApplication.java and CardsApplication.java**. This is completely
+   optional and can be used in the scenarios where we want to refresh the properties loaded into the given microservice with out the need of restart. In order to refresh the 
+   properties we can invoke the POST API **/actuator/refresh** exposed by the actuator through Postman. This refresh API will be exposed only if we configure                        **management.endpoints.web.exposure.include=*** inside **application.properties** like mentioned in the below step.
 -  Open the **application.properties** present inside **accounts**, **loans**, **cards** microservices and make sure to update the properties related to Config server details 
    inside them. After making the changes, your **application.properties** files should like below. For more details please check the course videos.
 ### \accounts\src\main\resources\application.properties
@@ -411,6 +417,7 @@ server.port=8080
 spring.application.name=accounts
 spring.profiles.active=prod
 spring.config.import=optional:configserver:http://localhost:8071
+management.endpoints.web.exposure.include=*
 ```
 ### \loans\src\main\resources\application.properties
 ```
@@ -427,6 +434,7 @@ server.port=8090
 spring.application.name=loans
 spring.profiles.active=dev
 spring.config.import=optional:configserver:http://localhost:8071/
+management.endpoints.web.exposure.include=*
 ```
 ### \cards\src\main\resources\application.properties
 ```
@@ -443,6 +451,7 @@ server.port=9000
 spring.application.name=cards
 spring.profiles.active=default
 spring.config.import=optional:configserver:http://localhost:8071
+management.endpoints.web.exposure.include=*
 ```
 -  Like we discussed in the course, under Accounts microservice project, please create the classes **AccountsServiceConfig.java**, **Properties.java** and update **AccountsController.java** to add a new GET API with the name **/account/properties**. After making the changes, these classes should like below.
 ```
@@ -826,8 +835,239 @@ public class CardsController {
 -  Check if your Config Server is running at port 8071, if not go to your Spring Boot main class **ConfigserverApplication.java** and right click-> Run As -> Java Application. This will start your Spring Boot application successfully at port 8071 which is the port we configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 -  Now go to the Spring Boot main classes and start all the three microservices by right click-> Run As -> Java Application. This will start your microservices successfully at port **8080,8090,9000** based on the ports configured inside **application.properties**. Your can confirm the same by looking at the console logs.
 -  To validate if individual microservices like **accounts, loans & cards** are able to fetch properties from **configserver** based on the cofigured **spring.profiles.active**
-   value, invoke the REST APIs http://localhost:8080/myAccount, http://localhost:8090/myLoans, http://localhost:9000/myCards through Postman by passing the below request in JSON format. You should get the response from the corresponding microservices.
+   value, invoke the REST APIs http://localhost:8080/account/properties, http://localhost:8090/loans/properties, http://localhost:9000/cards/properties through browser. You        should get the properties related to a microservice based on the active profile configured.
+-  Generate the docker images and push them into Docker hub by following the similar steps we discussed in the previous section.
+- Now write **docker-compose.yml** files inside **accounts/docker-compose** folder for each profile with the following content,
 
+### \accounts\docker-compose\default\docker-compose.yml
+	
+```yaml
+version: "3.8"
+
+services:
+
+  configserver:
+    image: eazybytes/configserver:latest
+    mem_limit: 700m
+    ports:
+      - "8071:8071"
+    networks:
+     - eazybank
+      
+  accounts:
+    image: eazybytes/accounts:latest
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+  
+  loans:
+    image: eazybytes/loans:latest
+    mem_limit: 700m
+    ports:
+      - "8090:8090"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    
+  cards:
+    image: eazybytes/cards:latest
+    mem_limit: 700m
+    ports:
+      - "9000:9000"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      
+networks:
+  eazybank:
+```
+### \accounts\docker-compose\dev\docker-compose.yml
+	
+```yaml
+version: "3.8"
+
+services:
+
+  configserver:
+    image: eazybytes/configserver:latest
+    mem_limit: 700m
+    ports:
+      - "8071:8071"
+    networks:
+     - eazybank
+      
+  accounts:
+    image: eazybytes/accounts:latest
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+  
+  loans:
+    image: eazybytes/loans:latest
+    mem_limit: 700m
+    ports:
+      - "8090:8090"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    
+  cards:
+    image: eazybytes/cards:latest
+    mem_limit: 700m
+    ports:
+      - "9000:9000"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      
+networks:
+  eazybank:
+```
+### \accounts\docker-compose\prod\docker-compose.yml
+	
+```yaml
+version: "3.8"
+
+services:
+
+  configserver:
+    image: eazybytes/configserver:latest
+    mem_limit: 700m
+    ports:
+      - "8071:8071"
+    networks:
+     - eazybank
+      
+  accounts:
+    image: eazybytes/accounts:latest
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+  
+  loans:
+    image: eazybytes/loans:latest
+    mem_limit: 700m
+    ports:
+      - "8090:8090"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    
+  cards:
+    image: eazybytes/cards:latest
+    mem_limit: 700m
+    ports:
+      - "9000:9000"
+    networks:
+      - eazybank
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      
+networks:
+  eazybank:
+```
+-  Based on the active profile that you want start the microservices, open the command line tool where the **docker-compose.yml** is present and run the docker compose command **"docker-compose up"** to start all the microservices containers with a single command. All the running containers can be validated by running a docker command **"docker ps"**.
+-  To validate if individual microservices like **accounts, loans & cards** are able to fetch properties from **configserver** based on the started active profile
+   value, invoke the REST APIs http://localhost:8080/account/properties, http://localhost:8090/loans/properties, http://localhost:9000/cards/properties through browser. You        should get the properties related to a microservice based on the active profile started.
+-  Stop the three running containers by executing the docker compose command **"docker-compose down"** from the location where **docker-compose.yml** is present.
 ---
-### HURRAY !!! Congratulations, you successfully generated docker images for three microservices related to Accounts, Loans and Cards of EazyBank Application.
+### HURRAY !!! Congratulations, you successfully set up Configuration management inside microservices network using Spring Cloud Config.
 ---
