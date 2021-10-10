@@ -119,7 +119,7 @@ public class EurekaserverApplication {
 ```
 - Open the **application.properties** inside **eurekaserver** microservices and make the following entries inside it like we discussed in the course. These entries will help
   in connecting to the Config Server and to disable the **ribbon** features. Please note if you are using a Spring Boot version of >=2.5 then providing **ribbon** 
-  configurations is not required. After making the changes your **application.properties** should like below,
+  configurations is not required. After making the changes, your **application.properties** should like below,
 ### \src\main\resources\application.properties
 ```
 spring.application.name=eurekaserver
@@ -152,7 +152,7 @@ eureka.client.serviceUrl.defaultZone=http://${eureka.instance.hostname}:${server
     </dependency>
 ```
 - Open the **application.properties** inside **accounts** microservices and add the below entries inside it which will help in integrating with **eurekaserver**
-### \src\main\resources\application.properties
+### \accounts\src\main\resources\application.properties
 ```
 eureka.instance.preferIpAddress = true 
 eureka.client.registerWithEureka = true
@@ -180,7 +180,7 @@ management.endpoint.shutdown.enabled=true
 		</dependency>
 ```
 - Open the **application.properties** inside **loans** microservices and add the below entries inside it which will help in integrating with **eurekaserver**
-### \src\main\resources\application.properties
+### \loans\src\main\resources\application.properties
 ```
 eureka.instance.preferIpAddress = true 
 eureka.client.registerWithEureka = true
@@ -196,7 +196,7 @@ endpoints.shutdown.enabled=true
 management.endpoint.shutdown.enabled=true
 ```
 - Open the **application.properties** inside **cards** microservices and add the below entries inside it which will help in integrating with **eurekaserver**
-### \src\main\resources\application.properties
+### \cards\src\main\resources\application.properties
 ```
 eureka.instance.preferIpAddress = true 
 eureka.client.registerWithEureka = true
