@@ -1,10 +1,7 @@
 ### Service Discovery & Registration inside microservices network using Spring Cloud Netflix Eureka
 ---
 
-**Description:** This repository has four maven projects with the names **accounts, loans, cards, configserver** which are continuation from the **section7** repository. 
-A new microservices **'eurekaserver'** is created in this section based on **Spring Cloud Netflix Eureka** which will act as a Service Discovery & Registration server. 
-All the existing microservices **accounts, loans, cards** are updated to register themself with the **eurekaserver** during the startup and send heartbeat signals.
-**accounts** microservice is also updated to connect with **loans** and **cards** microservices using Netflix Feign client. Below are the key steps that are followed inside 
+**Description:** This repository has four maven projects with the names **accounts, loans, cards, configserver** which are continuation from the section7 repository. A new microservices **'eurekaserver'** is created in this section based on **Spring Cloud Netflix Eureka** which will act as a Service Discovery & Registration server. All the existing microservices **accounts, loans, cards** are updated to register themself with the **eurekaserver** during the startup and send heartbeat signals.**accounts** microservice is also updated to connect with **loans** and **cards** microservices using Netflix Feign client. Below are the key steps that are followed inside 
 this **section8** where we focused on set up of **Eureka Server** inside our microservices network.
 
 **Key steps:**
