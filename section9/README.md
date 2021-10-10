@@ -165,6 +165,7 @@ resilience4j.ratelimiter.instances.sayHello.timeoutDuration=5000
 resilience4j.ratelimiter.instances.sayHello.limitRefreshPeriod=5000
 resilience4j.ratelimiter.instances.sayHello.limitForPeriod=1
 ```
+- Start all the microservices except **cards** microservice.
 - In order to test the **CircuitBreaker, Retry** pattern changes, invoke the endpoint http://localhost:8080/myCustomerDetails through Postman by passing the below request in JSON format. Since **cards** microservice is down, you should be able to see the response from fall back mechanisms configured as part of **CircuitBreaker, Retry** patterns.
 ```json
 {
