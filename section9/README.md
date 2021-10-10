@@ -174,7 +174,7 @@ resilience4j.ratelimiter.instances.sayHello.limitForPeriod=1
 ```
 - In order to test the **RateLimiter** pattern changes, invoke the endpoint http://localhost:8080/sayHello multiple times at a time through browser like we discussed in the
   course. You should be able to see the response from fall back mechanisms configured for **RateLimiter** pattern.
--  Stop any running microservices inside your eclipse
+-  Stop all the running microservices inside your eclipse
 ---
-### HURRAY !!! Congratulations, you successfully make your microservices Resilient using Resilience4j patterns.
+### HURRAY !!! Congratulations, you successfully made your microservices Resilient using Resilience4j patterns.
 ---
