@@ -229,6 +229,5 @@ Below are the key steps that we will be following in this section13 repository,
 - Atlast, make sure to delete the kubernetes cluster to avoid bill on your credit card :)
 
 ---
-### HURRAY !!! Congratulations, you successfully setup and explored automatic self-healing, scaling, deployments, rollouts, rollbacks inside microservices network 
-   using Kubernetes
+### HURRAY !!! Congratulations, you successfully setup and explored automatic self-healing, scaling, deployments, rollouts, rollbacks inside microservices network using Kubernetes
 ---
